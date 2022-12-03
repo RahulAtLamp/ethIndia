@@ -2,14 +2,51 @@
     margin-top: 50px;
     padding: 30px;
 
+    .lender-header {
+        text-align: center;
+    }
+
     .lender-inner {
-        display: gird;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 50px;
+        justify-content: center;
+        margin-top: 50px;
+        padding: 30px;
+        position: relative;
 
         .lender-card {
+            border: 1px dotted black;
+            border-radius: 10px;
 
-            .lender-certificate {}
+            .lender-certificate {
+                width: 500px;
+                overflow: hidden;
+
+                .lender-certificate-image {
+                    max-width: 100%;
+                }
+            }
 
             .lender-address {}
+
+            .lender-requests {
+                display: flex;
+                align-items: center;
+                align-content: center;
+                text-align: center;
+                width: 100%;
+                padding: 10px 5px;
+
+                .lender-confirm {
+                    text-align: center;
+                    width: 50%;
+                }
+                .lender-deny {
+                    text-align: center;
+                    width: 50%;
+                }
+            }
         }
     }
 }
