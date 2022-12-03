@@ -1,6 +1,11 @@
-import React from "react";
+import React, { useRef } from "react";
 import "../styles/contributors.scss";
+import { useAccount } from "wagmi";
 import axios from "axios";
+import { ethers } from "ethers";
+import { useNavigate } from "react-router-dom";
+import trufi from "../Trufi.json";
+
 function Contributors() {
   const [userId, setUserId] = React.useState("");
   const [userName, setUserName] = React.useState("");
@@ -10,17 +15,23 @@ function Contributors() {
   const [transactionCount, setTransactionCount] = React.useState();
   const [gasSpent, setGasSpent] = React.useState();
   const [nftCount, setNftCount] = React.useState();
-  const [contract, serContractCount] = React.useState();
+  const [contract, setContractCount] = React.useState();
+  const [allorganizationDetails, setallOrganizationDetails] = React.useState();
+  const dataFetchedRef = useRef(false);
+
   const popupRef = React.useRef();
 
+  const { address, isConnected } = useAccount();
+  console.log(address);
+  const navigate = useNavigate();
   const getTransactions = async () => {
     const resp = await axios
       .get(
-        `https://api.covalenthq.com/v1/80001/address/0xe57f4c84539a6414C4Cf48f135210e01c477EFE0/transactions_v2/?quote-currency=USD&format=JSON&block-signed-at-asc=false&no-logs=false&page-size=1000&key`,
+        `https://api.covalenthq.com/v1/80001/address/${address}/transactions_v2/?quote-currency=USD&format=JSON&block-signed-at-asc=false&no-logs=false&page-size=1000&key`,
         { auth: { username: "ckey_f09b8656acce40139909164b62e" } }
       )
       .then((res) => {
-        console.log(res.data.data.items.length);
+        // console.log(res.data.data.items.length);
         setTransactionCount(res.data.data.items.length);
       });
   };
@@ -28,19 +39,19 @@ function Contributors() {
   const getGasSpent = async () => {
     const resp = await axios
       .get(
-        `https://api.covalenthq.com/v1/80001/address/0xe57f4c84539a6414C4Cf48f135210e01c477EFE0/transactions_v2/?quote-currency=USD&format=JSON&block-signed-at-asc=false&no-logs=false&page-size=1000&key`,
+        `https://api.covalenthq.com/v1/80001/address/${address}/transactions_v2/?quote-currency=USD&format=JSON&block-signed-at-asc=false&no-logs=false&page-size=1000&key`,
         { auth: { username: "ckey_f09b8656acce40139909164b62e" } }
       )
       .then((res) => {
-        console.log(res.data.data.items);
+        // console.log(res.data.data.items);
         const transactions = res.data.data.items;
         var gas_Spent = 0;
         for (let i = 0; i < transactions.length; i++) {
-          console.log(transactions[i].fees_paid);
+          // console.log(transactions[i].fees_paid);
           gas_Spent += parseInt(transactions[i].fees_paid) / Math.pow(10, 18);
-          console.log(gas_Spent);
+          // console.log(gas_Spent);
         }
-        console.log(gas_Spent);
+        // console.log(gas_Spent);
         setGasSpent(gas_Spent);
         setTransactionCount(res.data.data.items.length);
       });
@@ -49,7 +60,7 @@ function Contributors() {
   const getNftCount = async () => {
     const walletnft = {
       method: "GET",
-      url: `https://deep-index.moralis.io/api/v2/0xe57f4c84539a6414C4Cf48f135210e01c477EFE0/nft`,
+      url: `https://deep-index.moralis.io/api/v2/${address}/nft`,
       params: {
         chain: "mumbai",
         format: "decimal",
@@ -65,7 +76,7 @@ function Contributors() {
       .request(walletnft)
       .then(function (response) {
         // walletNftData.push(response.data);
-        console.log(response.data.total);
+        // console.log(response.data.total);
         setNftCount(response.data.total);
       })
       .catch(function (error) {
@@ -81,7 +92,7 @@ function Contributors() {
     do {
       const options = {
         method: "GET",
-        url: "https://deep-index.moralis.io/api/v2/0xe57f4c84539a6414C4Cf48f135210e01c477EFE0",
+        url: `https://deep-index.moralis.io/api/v2/${address}`,
         params: {
           chain: "mumbai",
           cursor: cursor,
@@ -96,32 +107,47 @@ function Contributors() {
       await axios
         .request(options)
         .then(function (response) {
-          console.log(response.data);
+          // console.log(response.data);
           TransationDetails.push(response.data);
           cursor = response.data.cursor;
-          console.log(cursor);
+          // console.log(cursor);
         })
         .catch(function (error) {
           console.error(error);
         });
 
-      console.log(TransationDetails);
+      // console.log(TransationDetails);
     } while (cursor !== null);
 
     for (let i = 0; i < TransationDetails.length; i++) {
       // console.log(TransationDetails[i].result[0]);
       for (let j = 0; j < TransationDetails[i].result.length; j++) {
-        console.log(TransationDetails[i].result[j].receipt_contract_address);
+        // console.log(TransationDetails[i].result[j].receipt_contract_address);
         if (TransationDetails[i].result[j].receipt_contract_address !== null) {
           contractCount = contractCount + 1;
         }
       }
     }
-    serContractCount(contractCount);
-    console.log(contractCount);
+    setContractCount(contractCount);
+    // console.log(contractCount);
   };
 
-  const getScore = () => {
+  const getScore = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    const signer = provider.getSigner();
+    const organizations = new ethers.Contract(
+      "0x33ecA28D4f22496F124EA51a046b699d03119f28",
+      trufi,
+      signer
+    );
+    const getOrganizations = await organizations.getOrganization();
+    console.log(getOrganizations);
+    const getOrganizationDetails = await organizations.getOrganizationDetails(
+      getOrganizations
+    );
+    console.log(getOrganizationDetails);
+    setallOrganizationDetails(getOrganizationDetails);
     setShowPoints(true);
     setShowLenders(true);
   };
@@ -131,11 +157,6 @@ function Contributors() {
   };
 
   React.useEffect(() => {
-    getTransactions();
-    getNftCount();
-    getDeployedContractCount();
-    getGasSpent();
-
     function handleClickOutside(event) {
       if (popupRef.current && !popupRef.current.contains(event.target)) {
         setShowFields(false);
@@ -146,6 +167,23 @@ function Contributors() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [popupRef]);
+
+  React.useEffect(() => {
+    if (dataFetchedRef.current) return;
+    dataFetchedRef.current = true;
+    if (isConnected) {
+      getTransactions();
+      getNftCount();
+      getDeployedContractCount();
+      getGasSpent();
+    }
+  }, []);
+
+  React.useEffect(() => {
+    if (!isConnected) {
+      navigate("/");
+    }
+  }, [isConnected]);
 
   return (
     <>
@@ -202,9 +240,7 @@ function Contributors() {
           <div className="c-certificate-main">
             <div className="c-certificate-inner">
               <div className="c-certificate-header">
-                <div className="c-certificate-address">
-                  0x084c145f98C975a71a2fD5d3E5eAB84c0FC52fDf
-                </div>
+                <div className="c-certificate-address">{address}</div>
                 <div className="c-certificate-logo">logo</div>
               </div>
               <div className="c-certificate-score">
@@ -216,134 +252,28 @@ function Contributors() {
         {showLenders ? (
           <>
             <h1 className="c-lender-header">Lenders Available</h1>
+
             <div className="c-lender-list-main">
               <div className="c-lender-list-inner">
                 {/* Lender Card 1 */}
-                <div
-                  className="c-lender-card"
-                  onClick={() => {
-                    addFields(userId, userName);
-                  }}
-                >
-                  <div className="c-lender-name">Rahul Rajan</div>
-                  <div className="c-lender-description">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Culpa minus provident aliquid officiis itaque corrupti
-                    sapiente obcaecati harum. Earum beatae, unde illum provident
-                    repellat officia voluptates repellendus similique veritatis
-                    sunt inventore consectetur ab illo? Minima placeat
-                    necessitatibus temporibus voluptatum praesentium dignissimos
-                    ipsa totam, commodi fugit possimus. Nisi explicabo iure
-                    saepe!
-                  </div>
-                  <div className="c-lender-amount">12000$ Max</div>
-                  <div className="c-lender-interest">12% Interest</div>
-                </div>
-                {/* Lender Card 2 */}
-                <div
-                  className="c-lender-card"
-                  onClick={() => {
-                    addFields(userId, userName);
-                  }}
-                >
-                  <div className="c-lender-name">Rahul Rajan</div>
-                  <div className="c-lender-description">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Culpa minus provident aliquid officiis itaque corrupti
-                    sapiente obcaecati harum. Earum beatae, unde illum provident
-                    repellat officia voluptates repellendus similique veritatis
-                    sunt inventore consectetur ab illo? Minima placeat
-                    necessitatibus temporibus voluptatum praesentium dignissimos
-                    ipsa totam, commodi fugit possimus. Nisi explicabo iure
-                    saepe!
-                  </div>
-                  <div className="c-lender-amount">12000$ Max</div>
-                  <div className="c-lender-interest">12% Interest</div>
-                </div>
-                {/* Lender Card 3 */}
-                <div
-                  className="c-lender-card"
-                  onClick={() => {
-                    addFields(userId, userName);
-                  }}
-                >
-                  <div className="c-lender-name">Rahul Rajan</div>
-                  <div className="c-lender-description">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Culpa minus provident aliquid officiis itaque corrupti
-                    sapiente obcaecati harum. Earum beatae, unde illum provident
-                    repellat officia voluptates repellendus similique veritatis
-                    sunt inventore consectetur ab illo? Minima placeat
-                    necessitatibus temporibus voluptatum praesentium dignissimos
-                    ipsa totam, commodi fugit possimus. Nisi explicabo iure
-                    saepe!
-                  </div>
-                  <div className="c-lender-amount">12000$ Max</div>
-                  <div className="c-lender-interest">12% Interest</div>
-                </div>
-                {/* Lender Card 4 */}
-                <div
-                  className="c-lender-card"
-                  onClick={() => {
-                    addFields(userId, userName);
-                  }}
-                >
-                  <div className="c-lender-name">Rahul Rajan</div>
-                  <div className="c-lender-description">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Culpa minus provident aliquid officiis itaque corrupti
-                    sapiente obcaecati harum. Earum beatae, unde illum provident
-                    repellat officia voluptates repellendus similique veritatis
-                    sunt inventore consectetur ab illo? Minima placeat
-                    necessitatibus temporibus voluptatum praesentium dignissimos
-                    ipsa totam, commodi fugit possimus. Nisi explicabo iure
-                    saepe!
-                  </div>
-                  <div className="c-lender-amount">12000$ Max</div>
-                  <div className="c-lender-interest">12% Interest</div>
-                </div>
-                {/* Lender Card 5 */}
-                <div
-                  className="c-lender-card"
-                  onClick={() => {
-                    addFields(userId, userName);
-                  }}
-                >
-                  <div className="c-lender-name">Rahul Rajan</div>
-                  <div className="c-lender-description">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Culpa minus provident aliquid officiis itaque corrupti
-                    sapiente obcaecati harum. Earum beatae, unde illum provident
-                    repellat officia voluptates repellendus similique veritatis
-                    sunt inventore consectetur ab illo? Minima placeat
-                    necessitatibus temporibus voluptatum praesentium dignissimos
-                    ipsa totam, commodi fugit possimus. Nisi explicabo iure
-                    saepe!
-                  </div>
-                  <div className="c-lender-amount">12000$ Max</div>
-                  <div className="c-lender-interest">12% Interest</div>
-                </div>
-                {/* Lender Card 6 */}
-                <div
-                  className="c-lender-card"
-                  onClick={() => {
-                    addFields(userId, userName);
-                  }}
-                >
-                  <div className="c-lender-name">Rahul Rajan</div>
-                  <div className="c-lender-description">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Culpa minus provident aliquid officiis itaque corrupti
-                    sapiente obcaecati harum. Earum beatae, unde illum provident
-                    repellat officia voluptates repellendus similique veritatis
-                    sunt inventore consectetur ab illo? Minima placeat
-                    necessitatibus temporibus voluptatum praesentium dignissimos
-                    ipsa totam, commodi fugit possimus. Nisi explicabo iure
-                    saepe!
-                  </div>
-                  <div className="c-lender-amount">12000$ Max</div>
-                  <div className="c-lender-interest">12% Interest</div>
-                </div>
+                {console.log(allorganizationDetails)}
+                {allorganizationDetails.map((item) => {
+                  <div>
+                    <div className="c-lender-name">{item[0][0]}</div>
+                    <div className="c-lender-description">
+                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                      Culpa minus provident aliquid officiis itaque corrupti
+                      sapiente obcaecati harum. Earum beatae, unde illum
+                      provident repellat officia voluptates repellendus
+                      similique veritatis sunt inventore consectetur ab illo?
+                      Minima placeat necessitatibus temporibus voluptatum
+                      praesentium dignissimos ipsa totam, commodi fugit
+                      possimus. Nisi explicabo iure saepe!
+                    </div>
+                    <div className="c-lender-amount">12000$ Max</div>
+                    <div className="c-lender-interest">12% Interest</div>
+                  </div>;
+                })}
               </div>
             </div>
           </>
