@@ -2,6 +2,7 @@ import React from "react";
 import "../styles/lender.scss";
 import { ethers } from "ethers";
 import trufi from "../Trufi.json";
+import * as PushAPI from "@pushprotocol/restapi";
 
 function Lender() {
   const [data, setData] = React.useState([]);
@@ -20,7 +21,7 @@ function Lender() {
     setData(getapplicationdata);
   };
 
-  const approve = async (appId) => {
+  const approve = async (appId, userAddress) => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     const applications = new ethers.Contract(
@@ -29,7 +30,43 @@ function Lender() {
       signer
     );
     const approveuser = await applications.approveUser(appId);
+    sendNotification(userAddress);
   };
+
+  const PK = "1de3f536b6915f6abddb12d948c86cd1fb2d01cf532213b4c9bf4531f5229a24"; // channel private key
+  const Pkey = `0x${PK}`;
+  const signer = new ethers.Wallet(Pkey);
+
+  const sendNotification = async (userAddress) => {
+    try {
+      const apiResponse = await PushAPI.payloads.sendNotification({
+        signer,
+        type: 3, // target
+        identityType: 2, // direct payload
+        notification: {
+          title: `Approval of your loan Application`,
+          body: `Congratulation your loan has been approved`,
+        },
+        payload: {
+          title: `Approval of your loan Application`,
+          body: `Congratulation your loan has been approved`,
+          cta: "",
+          img: "",
+        },
+        recipients: "eip155:5:" + userAddress, // recipient address
+        channel: "eip155:5:0x737175340d1D1CaB2792bcf83Cff6bE7583694c7", // your channel address
+        env: "staging",
+      });
+
+      // apiResponse?.status === 204, if sent successfully!
+      console.log("API repsonse: ", apiResponse);
+    } catch (err) {
+      console.error("Error: ", err);
+    }
+  };
+
+  sendNotification();
+
   React.useEffect(() => {
     getApplications();
   }, []);
@@ -55,7 +92,9 @@ function Lender() {
                       <div className="lender-confirm">
                         <button
                           className="confirm"
-                          onClick={() => approve(parseInt(item.appId))}
+                          onClick={() =>
+                            approve(parseInt(item.appId), item.userAddress)
+                          }
                         >
                           Confirm{" "}
                         </button>
