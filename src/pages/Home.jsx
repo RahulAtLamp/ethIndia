@@ -345,6 +345,8 @@ function Home() {
             </g>
           </svg>
         </div>
+        <div className="all-sponsors"></div>
+
       </div>
     </>
   );
