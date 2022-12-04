@@ -19,7 +19,7 @@ function Navbar() {
             <Link to="/">
               {/* <Image src={logo} alt="logo" /> */}
               <h1 className="logo-h1">
-                LOGO
+                <img src="./TruFi_logo.png" alt="logo" style={{ height:"50px", marginTop:"10px" }} />
                 {/* UpToData */}
               </h1>
             </Link>

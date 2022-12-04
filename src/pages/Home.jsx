@@ -1,28 +1,28 @@
 import React from "react";
-import "../styles/home.scss";
+// import "../styles/home.scss";
 import bg1 from "../components/assets/bg1.png";
+import BackgroundAnimation from "../components/BackgroundAnimatin";
 
 function Home() {
   return (
     <>
       <div className="hero">
         <div className="hero-left">
-          <p className="hero-p">Lorem, ipsum dolor.</p>
-          <h1 className="hero-h1">Lorem ipsum dolor sit amet.</h1>
+          {/* <p className="hero-p">TruFi</p> */}
+          <h1 className="hero-h1">TruFi</h1>
           <p className="hero-p">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci,
-            dolorum?
+            A trusted source to get tokens based on your account history
           </p>
           <div className="hero-left-buttons">
-            <button className="hero-btn-1">lorem Ipsum</button>
-            <button className="hero-btn-2">lorem Ipsum</button>
+            <button className="hero-btn-1">Get Started</button>
+            {/* <button className="hero-btn-2">lorem Ipsum</button> */}
           </div>
         </div>
         <div className="hero-right">
           <div className="hero-right-bg"></div>
           <div className="hero-right-inside">
-            <img className="hero-right-bg1" src={bg1} alt="backgroundimage" />
-            <div className="hero-right-inside-box">
+            {/* <img className="hero-right-bg1" src={bg1} alt="backgroundimage" /> */}
+            {/* <div className="hero-right-inside-box">
               <p className="heor-right-quote">
                 <em>
                   Friends, such as we desire, are dreams and fables. Friendship
@@ -30,8 +30,9 @@ function Home() {
                 </em>
               </p>
               <p className="hero-right-quote-title">Ralph Waldo Emerson</p>
-            </div>
+            </div> */}
           </div>
+          <BackgroundAnimation />
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="186.223"
