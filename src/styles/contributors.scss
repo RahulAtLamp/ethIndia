@@ -1,173 +1,177 @@
 .c-main {
-    min-height: 100vh;
+  min-height: 100vh;
+  width: 100%;
+
+  .c-dashboard {
+    padding: 30px;
+
+    .c-dashboard-inner {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 50px;
+      justify-content: center;
+      margin-top: 50px;
+      padding: 30px;
+      position: relative;
+
+      .c-dashboard-card {
+        width: 300px;
+        height: 200px;
+        border: 1px solid black;
+        border-radius: 20px;
+        padding: 5px;
+
+        .c-card-header {
+          font-size: 30px;
+          text-align: center;
+        }
+
+        .c-card-t-counter {
+          text-align: center;
+          margin-top: 20px;
+
+          .c-card-count {
+            font-size: 80px;
+            height: 150px;
+            width: 100%;
+
+            .currency {
+              font-size: 18px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .c-score-btn-holder {
     width: 100%;
+    text-align: center;
 
-    .c-dashboard {
-        padding: 30px;
-
-        .c-dashboard-inner {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 50px;
-            justify-content: center;
-            margin-top: 50px;
-            padding: 30px;
-            position: relative;
-
-            .c-dashboard-card {
-                width: 300px;
-                height: 200px;
-                border: 1px solid black;
-                border-radius: 20px;
-                padding: 5px;
-
-                .c-card-header {
-                    font-size: 30px;
-                    text-align: center;
-                }
-
-                .c-card-t-counter {
-                    text-align: center;
-                    margin-top: 20px;
-
-                    .c-card-count {
-                        font-size: 80px;
-                        height: 150px;
-                        width: 100%;
-                    }
-                }
-            }
-        }
+    .c-score-btn {
+      padding: 5px;
+      border: 1px dashed black;
+      background-color: lightblue;
     }
+  }
 
-    .c-score-btn-holder {
-        width: 100%;
-        text-align: center;
+  .c-certificate-main {
+    margin-top: 40px;
 
-        .c-score-btn {
-            padding: 5px;
-            border: 1px dashed black;
-            background-color: lightblue;
-        }
-    }
+    .c-certificate-inner {
+      width: 500px;
+      border: 1px dashed black;
+      margin: 0 auto;
+      height: 100px;
+      padding: 10px;
+      border-radius: 10px;
 
-    .c-certificate-main {
-        margin-top: 40px;
-
-        .c-certificate-inner {
-            width: 500px;
-            border: 1px dashed black;
-            margin: 0 auto;
-            height: 100px;
-            padding: 10px;
-            border-radius: 10px;
-
-            .c-certificate-header {
-                display: flex;
-                align-items: center;
-                align-content: center;
-
-                .c-certificate-address {
-                    flex-grow: 1;
-                }
-
-                // .c-certificate-logo {
-
-                // }
-            }
-
-            .c-certificate-score {
-                font-size: 50px;
-                margin-top: 20px;
-
-                span {
-                    font-size: 20px;
-                }
-            }
-        }
-    }
-
-    .c-lender-header {
-        text-align: center;
-    }
-
-    .c-lender-list-main {
-        margin-top: 40px;
-
-        .c-lender-list-inner {
-            padding: 30px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 50px;
-            justify-content: center;
-            margin-top: 50px;
-            padding: 30px;
-            position: relative;
-
-            .c-lender-card {
-                width: 300px;
-                height: 300px;
-                border: 1px solid black;
-                border-radius: 20px;
-                padding: 10px;
-                cursor: pointer;
-
-                .c-lender-name {
-                    font-size: 25px;
-                    font-weight: 900;
-                }
-
-                .c-lender-description {
-                    max-height: 165px;
-                    height: 100%;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    font-size: 18px;
-                    margin-top: 20px;
-                }
-
-                .c-lender-amount {
-                    font-size: 20px;
-                    font-weight: 700;
-                    margin-top: 20px;
-                }
-
-                .c-lender-interest {
-                    font-size: 18px;
-                    font-weight: 500;
-                    margin-top: 10px;
-                }
-            }
-        }
-    }
-}
-
-.c-lender-request-main {
-    position: fixed;
-    height: 100vh;
-    width: 100%;
-    background-color: rgba(204, 204, 204, 0.6);
-    top: 0;
-    z-index: 2000;
-    display: flex;
-    align-items: center;
-    align-content: center;
-
-    .c-lender-request-box {
-        width:400px;
-        margin: 0 auto;
-        background-color: #ccc;
-        padding: 10px;
-        text-align: center;
-        border-radius: 10px;
+      .c-certificate-header {
         display: flex;
         align-items: center;
         align-content: center;
-        flex-direction: column;
-        gap: 10px;
 
-        // .c-lender-amount {
+        .c-certificate-address {
+          flex-grow: 1;
+        }
+
+        // .c-certificate-logo {
 
         // }
+      }
+
+      .c-certificate-score {
+        font-size: 50px;
+        margin-top: 20px;
+
+        span {
+          font-size: 20px;
+        }
+      }
     }
+  }
+
+  .c-lender-header {
+    text-align: center;
+  }
+
+  .c-lender-list-main {
+    margin-top: 40px;
+
+    .c-lender-list-inner {
+      padding: 30px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 50px;
+      justify-content: center;
+      margin-top: 50px;
+      padding: 30px;
+      position: relative;
+
+      .c-lender-card {
+        width: 300px;
+        height: 300px;
+        border: 1px solid black;
+        border-radius: 20px;
+        padding: 10px;
+        cursor: pointer;
+
+        .c-lender-name {
+          font-size: 25px;
+          font-weight: 900;
+        }
+
+        .c-lender-description {
+          max-height: 165px;
+          height: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          font-size: 18px;
+          margin-top: 20px;
+        }
+
+        .c-lender-amount {
+          font-size: 20px;
+          font-weight: 700;
+          margin-top: 20px;
+        }
+
+        .c-lender-interest {
+          font-size: 18px;
+          font-weight: 500;
+          margin-top: 10px;
+        }
+      }
+    }
+  }
+}
+
+.c-lender-request-main {
+  position: fixed;
+  height: 100vh;
+  width: 100%;
+  background-color: rgba(204, 204, 204, 0.6);
+  top: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  align-content: center;
+
+  .c-lender-request-box {
+    width: 400px;
+    margin: 0 auto;
+    background-color: #ccc;
+    padding: 10px;
+    text-align: center;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    align-content: center;
+    flex-direction: column;
+    gap: 10px;
+
+    // .c-lender-amount {
+
+    // }
+  }
 }
