@@ -1,10 +1,11 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import "../styles/contributors.scss";
 import { useAccount } from "wagmi";
 import axios from "axios";
 import { ethers } from "ethers";
 import { useNavigate } from "react-router-dom";
 import trufi from "../Trufi.json";
+import * as htmlToImage from "html-to-image";
 
 function Contributors() {
   const [userId, setUserId] = React.useState("");
@@ -17,7 +18,10 @@ function Contributors() {
   const [nftCount, setNftCount] = React.useState();
   const [contract, setContractCount] = React.useState();
   const [allorganizationDetails, setallOrganizationDetails] = React.useState();
-  const dataFetchedRef = useRef(false);
+  const [data, setData] = React.useState({ price: "", type: "" });
+  const domEl = useRef(null);
+  let imageUri = "";
+  const [org_address, setOrg_address] = React.useState("");
 
   const popupRef = React.useRef();
 
@@ -76,7 +80,7 @@ function Contributors() {
       .request(walletnft)
       .then(function (response) {
         // walletNftData.push(response.data);
-        // console.log(response.data.total);
+        console.log(response.data.total);
         setNftCount(response.data.total);
       })
       .catch(function (error) {
@@ -110,7 +114,7 @@ function Contributors() {
           // console.log(response.data);
           TransationDetails.push(response.data);
           cursor = response.data.cursor;
-          // console.log(cursor);
+          console.log(cursor);
         })
         .catch(function (error) {
           console.error(error);
@@ -142,7 +146,6 @@ function Contributors() {
       signer
     );
     const getOrganizations = await organizations.getOrganization();
-    console.log(getOrganizations);
     const getOrganizationDetails = await organizations.getOrganizationDetails(
       getOrganizations
     );
@@ -152,8 +155,68 @@ function Contributors() {
     setShowLenders(true);
   };
 
-  const addFields = (id, name) => {
+  function dataURLtoFile(dataurl, filename) {
+    var arr = dataurl.split(","),
+      mime = arr[0].match(/:(.*?);/)[1],
+      bstr = atob(arr[1]),
+      n = bstr.length,
+      u8arr = new Uint8Array(n);
+
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+
+    return new File([u8arr], filename, { type: mime });
+  }
+
+  const addFields = async (orgAddress) => {
+    setOrg_address(orgAddress);
+    console.log(org_address);
     setShowFields(true);
+  };
+
+  const applyLoan = async () => {
+    const dataUrl = await htmlToImage.toPng(domEl.current);
+    var file = dataURLtoFile(dataUrl, "certificate.png");
+    const form = new FormData();
+    form.append("file", file);
+    const options = {
+      method: "POST",
+      url: "https://api.nftport.xyz/v0/files",
+      headers: {
+        "Content-Type":
+          "multipart/form-data; boundary=---011000010111000001101001",
+        Authorization: "3a00a5ae-f74a-4369-820d-8da1cc435690",
+      },
+      data: form,
+    };
+    console.log(options);
+    await axios
+      .request(options)
+      .then(function (response) {
+        console.log(response.data);
+        console.log(response.data.ipfs_url);
+        imageUri = response.data.ipfs_url;
+      })
+      .catch(function (error) {
+        console.error(error);
+      });
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const applyForLoan = new ethers.Contract(
+      "0x33ecA28D4f22496F124EA51a046b699d03119f28",
+      trufi,
+      signer
+    );
+    console.log(imageUri);
+    console.log(org_address);
+    console.log(data.price);
+    const applyforloan = await applyForLoan.userApplyDetails(
+      org_address,
+      imageUri,
+      data.price,
+      "grant"
+    );
   };
 
   React.useEffect(() => {
@@ -169,8 +232,6 @@ function Contributors() {
   }, [popupRef]);
 
   React.useEffect(() => {
-    if (dataFetchedRef.current) return;
-    dataFetchedRef.current = true;
     if (isConnected) {
       getTransactions();
       getNftCount();
@@ -219,7 +280,12 @@ function Contributors() {
                 <span className="c-card-header">Gas Fee Spent</span>
                 <div className="c-card-t-counter">
                   <div className="c-card-count">
-                    {gasSpent ? gasSpent.toFixed(2) + " Matic" : null}
+                    {gasSpent ? (
+                      <div>
+                        {gasSpent.toFixed(2)}
+                        <span className="currency">Matic</span>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
               </div>
@@ -237,14 +303,16 @@ function Contributors() {
           </button>
         </div>
         {showPoints ? (
-          <div className="c-certificate-main">
-            <div className="c-certificate-inner">
-              <div className="c-certificate-header">
-                <div className="c-certificate-address">{address}</div>
-                <div className="c-certificate-logo">logo</div>
-              </div>
-              <div className="c-certificate-score">
-                300 <span>Points</span>
+          <div id="domEl" ref={domEl}>
+            <div className="c-certificate-main">
+              <div className="c-certificate-inner">
+                <div className="c-certificate-header">
+                  <div className="c-certificate-address">{address}</div>
+                  <div className="c-certificate-logo">logo</div>
+                </div>
+                <div className="c-certificate-score">
+                  300 <span>Points</span>
+                </div>
               </div>
             </div>
           </div>
@@ -258,21 +326,23 @@ function Contributors() {
                 {/* Lender Card 1 */}
                 {console.log(allorganizationDetails)}
                 {allorganizationDetails.map((item) => {
-                  <div>
-                    <div className="c-lender-name">{item[0][0]}</div>
-                    <div className="c-lender-description">
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                      Culpa minus provident aliquid officiis itaque corrupti
-                      sapiente obcaecati harum. Earum beatae, unde illum
-                      provident repellat officia voluptates repellendus
-                      similique veritatis sunt inventore consectetur ab illo?
-                      Minima placeat necessitatibus temporibus voluptatum
-                      praesentium dignissimos ipsa totam, commodi fugit
-                      possimus. Nisi explicabo iure saepe!
+                  return (
+                    <div
+                      onClick={() => {
+                        addFields(item[0]);
+                      }}
+                      className="c-lender-card"
+                    >
+                      <div className="c-lender-name">{item[1]}</div>
+                      <div className="c-lender-description">{item[2]}</div>
+                      <div className="c-lender-amount">
+                        {item[3] + " $ Max"}
+                      </div>
+                      <div className="c-lender-interest">
+                        {"Interest : " + item[4] + " %"}
+                      </div>
                     </div>
-                    <div className="c-lender-amount">12000$ Max</div>
-                    <div className="c-lender-interest">12% Interest</div>
-                  </div>;
+                  );
                 })}
               </div>
             </div>
@@ -287,6 +357,7 @@ function Contributors() {
                 className="c-lender-amount"
                 type="number"
                 placeholder="Please enter the amount in Dollar"
+                onChange={(e) => setData({ ...data, price: e.target.value })}
               />
             </div>
             <div>
@@ -295,12 +366,10 @@ function Contributors() {
             <div>
               <input type="checkbox" value="Lending" /> Lending
             </div>
-            <div>
-              <select defaultValue={""}>
-                <option value="">--Select Chain--</option>
-              </select>
-            </div>
-            <button className="apply-btn">Apply</button>
+            <div></div>
+            <button className="apply-btn" onClick={() => applyLoan()}>
+              Apply
+            </button>
           </div>
         </div>
       ) : null}
