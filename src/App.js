@@ -41,7 +41,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/contributors" element={<Contributors />} />
-              <Route path="/lenders" element={<Lender />} />
+              <Route path="/applications" element={<Lender />} />
               <Route path="/applied-loans" element={<AppliedLoans />} />
             </Routes>
           </Router>
