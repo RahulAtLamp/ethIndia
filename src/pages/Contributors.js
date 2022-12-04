@@ -264,7 +264,8 @@ function Contributors() {
                 <span className="c-card-header">NFTs Holding</span>
                 <div className="c-card-t-counter">
                   <div className="c-card-count">
-                    {nftCount ? nftCount : null}
+                    34
+                    {/* {nftCount ? nftCount : null} */}
                   </div>
                 </div>
               </div>
@@ -308,7 +309,9 @@ function Contributors() {
               <div className="c-certificate-inner">
                 <div className="c-certificate-header">
                   <div className="c-certificate-address">{address}</div>
-                  <div className="c-certificate-logo">logo</div>
+                  <div className="c-certificate-logo">
+                    <img src="TruFi_logo.png" height="30px" width="30px"></img>
+                  </div>
                 </div>
                 <div className="c-certificate-score">
                   300 <span>Points</span>
