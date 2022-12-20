@@ -26,7 +26,7 @@ function Contributors() {
   const popupRef = React.useRef();
 
   const { address, isConnected } = useAccount();
-  console.log(address);
+  // console.log(address);
   const navigate = useNavigate();
   const getTransactions = async () => {
     const resp = await axios
@@ -80,7 +80,7 @@ function Contributors() {
       .request(walletnft)
       .then(function (response) {
         // walletNftData.push(response.data);
-        console.log(response.data.total);
+        // console.log(response.data.total);
         setNftCount(response.data.total);
       })
       .catch(function (error) {
@@ -114,7 +114,7 @@ function Contributors() {
           // console.log(response.data);
           TransationDetails.push(response.data);
           cursor = response.data.cursor;
-          console.log(cursor);
+          // console.log(cursor);
         })
         .catch(function (error) {
           console.error(error);
@@ -137,6 +137,8 @@ function Contributors() {
   };
 
   const getScore = async () => {
+    console.log("hello");
+
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     await provider.send("eth_requestAccounts", []);
     const signer = provider.getSigner();
@@ -145,10 +147,12 @@ function Contributors() {
       trufi,
       signer
     );
+
     const getOrganizations = await organizations.getOrganization();
     const getOrganizationDetails = await organizations.getOrganizationDetails(
       getOrganizations
     );
+    console.log("hello");
     console.log(getOrganizationDetails);
     setallOrganizationDetails(getOrganizationDetails);
     setShowPoints(true);
@@ -256,25 +260,20 @@ function Contributors() {
                 <span className="c-card-header">Transactions</span>
                 <div className="c-card-t-counter">
                   <div className="c-card-count">
-                    {transactionCount ? transactionCount : null}
+                    {transactionCount ? transactionCount : 0}
                   </div>
                 </div>
               </div>
               <div className="c-dashboard-card">
                 <span className="c-card-header">NFTs Holding</span>
                 <div className="c-card-t-counter">
-                  <div className="c-card-count">
-                    34
-                    {/* {nftCount ? nftCount : null} */}
-                  </div>
+                  <div className="c-card-count">{nftCount ? nftCount : 0}</div>
                 </div>
               </div>
               <div className="c-dashboard-card">
                 <span className="c-card-header">Contracts Deployed</span>
                 <div className="c-card-t-counter">
-                  <div className="c-card-count">
-                    {contract ? contract : null}
-                  </div>
+                  <div className="c-card-count">{contract ? contract : 0}</div>
                 </div>
               </div>
               <div className="c-dashboard-card">
@@ -286,7 +285,9 @@ function Contributors() {
                         {gasSpent.toFixed(2)}
                         <span className="currency">Matic</span>
                       </div>
-                    ) : null}
+                    ) : (
+                      0
+                    )}
                   </div>
                 </div>
               </div>
